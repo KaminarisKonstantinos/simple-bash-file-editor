@@ -2,6 +2,10 @@
 
 columns="$(tput cols)"
 welcomeMessage="Welcome to Business Hall!"
+tmpfile=$(mktemp)
+
+exec 3>"$tmpfile"
+exec 4<"$tmpfile"
 
 print_menu () {
     echo 
@@ -25,7 +29,7 @@ check_file () {
 }
 
 perform_action () {
-    case $1 in
+    case "$1" in
 
         1)
             # Select business file
@@ -40,17 +44,18 @@ perform_action () {
                 echo "File does not exist. Default file selected"
                 file="./Businesses.csv"
             fi
+            cp $file $tmpfile
             ;;
         2)
             # Print business data
             check_file
             result=$?
-            if test $result -eq 1; then
+            if test "$result" -eq 1; then
                 echo "Enter business code"
                 echo
                 read business_code
                 echo
-                awk -F, -v x="$business_code" '$1==x {print}' $file
+                awk -F, -v x="$business_code" '$1==x {print}' $tmpfile | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
                 echo
             fi
             ;;
@@ -58,28 +63,30 @@ perform_action () {
             # Update business data field
             check_file
             result=$?
-            if test $result -eq 1; then
-                echo 3
+            if test "$result" -eq 1; then
+                echo hello >&3
             fi
             ;;
         4)
             # Print entire file
             check_file
             result=$?
-            if test $result -eq 1 ; then 
+            if test "$result" -eq 1 ; then 
                 echo
-                more -cdf $file
+                cat $tmpfile | column -s "," -t | more -df
             fi
             ;;
         5)
             # Save changes 
             check_file
             result=$?
-            if test $result -eq 1; then
-                echo 5
+            if test "$result" -eq 1; then
+                head -n 1 <&4
             fi
             ;;
         6)
+            exec 3>&-
+            rm "$tmpfile"
             echo
             echo "Thank you for using Business Hall!" 
             ;;
@@ -98,7 +105,7 @@ echo
 
 # main app prompt
 input=0
-while [ $input != "6" ]; do
+while [ "$input" != "6" ]; do
 
     print_menu
     read input
@@ -109,7 +116,7 @@ while [ $input != "6" ]; do
     fi
 
     echo
-    perform_action $input
+    perform_action "$input"
 
 done
 
