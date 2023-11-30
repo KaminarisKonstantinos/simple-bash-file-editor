@@ -1,5 +1,5 @@
 #################################################################
-# 236064 Kaminaris Konstantinos
+# 236064 1041756 Kaminaris Konstantinos
 #################################################################
 
 #!/usr/bin/env bash
@@ -7,6 +7,7 @@
 COLUMNS="$(tput cols)"
 WELCOME_MESSAGE="Welcome to Business Hall!"
 TMPFILE=$(mktemp)
+FILE="./businesses.csv"
 
 exec 3>"$TMPFILE"
 exec 4<"$TMPFILE"
@@ -21,15 +22,6 @@ print_menu () {
     echo "Exit - - - - - - - - - - - - - - -(6)"
     echo
     echo -n "Select one of the options above by typing the respective number: "
-}
-
-check_file () {
-    if test ! -f "$FILE"; then
-        echo "No file selected. Please select a file first."
-        return 0
-    else
-        return 1
-    fi
 }
 
 select_file () {
@@ -48,39 +40,54 @@ select_file () {
 }
 
 print_business_data () {
-    echo -n "Enter business code: "
-    read BUSINESS_CODE
-    echo
-    awk_on_screen
+    echo -n "Enter business id: "
+    read BUSINESS_ID
+    # check if business id exists
+    awk -F"," -v x="$BUSINESS_ID" '$1==x {print}' $TMPFILE > tmp
+    if [[ -s tmp ]]; then
+        awk_on_screen
+    else
+        echo "Business ID not found."
+    fi
+    rm -f tmp
     echo
 }
 
 awk_on_screen () {
-    awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
+    awk -F"," -v x="$BUSINESS_ID" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
 }
 
 update_data () {
-    echo -n "Enter business code: "
-    read BUSINESS_CODE
-    # check if business code exists
-    awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE > tmp
+    echo -n "Enter business id: "
+    read BUSINESS_ID
+    # check if business id exists
+    awk -F"," -v x="$BUSINESS_ID" '$1==x {print}' $TMPFILE > tmp
     if [[ -s tmp ]]; then
         change_field
     else
-        echo "Business code not found."
+        echo "Business id not found."
     fi
     rm -f tmp
     echo
 }
 
 change_field () {
-    echo -n "Enter which field you would like to change: "
+    echo
+    echo "ID (1)"
+    echo "Name (2)"
+    echo "Adress (3)"
+    echo "City (4)"
+    echo "PostCode (5)"
+    echo "Longitude (6)"
+    echo "Latitude (7)"
+    echo
+    echo -n "Select the field you would like to change by entering its respective number (1-7): "
     read FIELD_INDEX
     if [[ "$FIELD_INDEX" = [1-7] ]]; then
         echo -n "Enter new field value: "
         read FIELD_VALUE
         echo
-        echo -n "Are you sure you want to change the value from $FIELD_VALUE? (y/n) "
+        echo -n "Are you sure you want to change the value to $FIELD_VALUE? (y/n) "
         read INPUT2
         echo
         if [[ "$INPUT2" =~ [yY] ]]; then
@@ -89,7 +96,7 @@ change_field () {
             awk_on_screen
             echo
             # Make the change on tmpfile, not original file
-            awk -v x="$BUSINESS_CODE" -v y="$FIELD_INDEX" -v z="$FIELD_VALUE" 'BEGIN {FS=OFS=","} $1==x {$y=z} 1' $TMPFILE > tmp && mv tmp $TMPFILE
+            awk -v x="$BUSINESS_ID" -v y="$FIELD_INDEX" -v z="$FIELD_VALUE" 'BEGIN {FS=OFS=","} $1==x {$y=z} 1' $TMPFILE > tmp && mv tmp $TMPFILE
             echo "New data:"
             echo
             awk_on_screen
@@ -109,11 +116,11 @@ print_entire_file () {
 }
 
 save_changes () {
-    echo -n "Are you sure to want to save the changes? (y,n) "
+    echo -n "Are you sure to want to save the changes? (y/n) "
     read INPUT1
     if [[ "$INPUT1" =~ [yY] ]]; then
         cp $TMPFILE $FILE
-        echo "Changes saved to $FILE."
+        echo "Changes saved to $FILE!"
     else
         echo "Changes not saved."
     fi
@@ -133,32 +140,16 @@ perform_action () {
             select_file
             ;;
         2)
-            check_file
-            RESULT=$?
-            if test "$RESULT" -eq 1; then
-                print_business_data
-            fi
+            print_business_data
             ;;
         3)
-            check_file
-            RESULT=$?
-            if test "$RESULT" -eq 1; then
-                update_data
-            fi
+            update_data
             ;;
         4)
-            check_file
-            RESULT=$?
-            if test "$RESULT" -eq 1 ; then 
-                print_entire_file
-            fi
+            print_entire_file
             ;;
         5)
-            check_file
-            RESULT=$?
-            if test "$RESULT" -eq 1; then
-                save_changes
-            fi
+            save_changes
             ;;
         6)
             quit
@@ -178,6 +169,8 @@ echo
 printf "%*s\n" $(( (${#WELCOME_MESSAGE} + COLUMNS) / 2)) "$WELCOME_MESSAGE"
 echo 
 echo 
+
+cp $FILE $TMPFILE
 
 # main app prompt
 INPUT=0
