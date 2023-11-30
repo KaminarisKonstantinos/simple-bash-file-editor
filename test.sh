@@ -42,6 +42,7 @@ select_file () {
 print_business_data () {
     echo -n "Enter business id: "
     read BUSINESS_ID
+    echo
     # check if business id exists
     awk -F"," -v x="$BUSINESS_ID" '$1==x {print}' $TMPFILE > tmp
     if [[ -s tmp ]]; then
@@ -60,6 +61,7 @@ awk_on_screen () {
 update_data () {
     echo -n "Enter business id: "
     read BUSINESS_ID
+    echo
     # check if business id exists
     awk -F"," -v x="$BUSINESS_ID" '$1==x {print}' $TMPFILE > tmp
     if [[ -s tmp ]]; then

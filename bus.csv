@@ -1,8 +1,8 @@
 ID,BusinessName,AddressLine2,AddressLine3,PostCode,Longitude,Latitude
 19429,(Starbucks),390 Provan Walk,Glasgow,G34 9DL,-4.136909,55.872982
 360857,1478 Social Club,11 Dove Street,Glasgow,G53 7BS,-4.362002,55.812693
-36363,1call Direct,116 West Regent Street,Glasgow,G2 2QD,-4.258314,55.863552
-36362,2 Go,397 Dumbarton Road,Glasgow,G11 6BE,-4.308613,55.870617
+36363,McDonalds,116 West Regent Street,Glasgow,G2 2QD,-4.258314,sdf
+36362,321,397 Dumbarton Road,Glasgow,G11 6BE,-4.308613,55.870617
 507934,200 St Vincent Street,200 St Vincent Street,Glasgow,G2 5SG,-4.260957,55.86229
 95689,279 Cafe Bistro,279 Dumbarton Road,Glasgow,G11 6AB,-4.303939,55.870516
 110587,32nd Signal Regiment (v),21 Jardine Street,Glasgow,G20 6JU,-4.277246,55.877088
