@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-columns="$(tput cols)"
-welcomeMessage="Welcome to Business Hall!"
-tmpfile=$(mktemp)
+COLUMNS="$(tput cols)"
+WELCOME_MESSAGE="Welcome to Business Hall!"
+TMPFILE=$(mktemp)
 
-exec 3>"$tmpfile"
-exec 4<"$tmpfile"
+exec 3>"$TMPFILE"
+exec 4<"$TMPFILE"
 
 print_menu () {
     echo 
@@ -20,7 +20,7 @@ print_menu () {
 }
 
 check_file () {
-    if test ! -f "$file"; then
+    if test ! -f "$FILE"; then
         echo "No file selected. Please select a file first."
         return 0
     else
@@ -34,61 +34,85 @@ perform_action () {
         1)
             # Select business file
             echo "Enter the path to your selected business file"
-            read file_location
-            if test -f "$file_location"; then
+            read FILE_LOCATION
+            if test -f "$FILE_LOCATION"; then
                 echo
                 echo "File selected!"
-                file=$file_location
+                FILE=$FILE_LOCATION
             else
                 echo
                 echo "File does not exist. Default file selected"
-                file="./Businesses.csv"
+                FILE="./Businesses.csv"
             fi
-            cp $file $tmpfile
+            cp $FILE $TMPFILE
             ;;
         2)
             # Print business data
             check_file
-            result=$?
-            if test "$result" -eq 1; then
+            RESULT=$?
+            if test "$RESULT" -eq 1; then
                 echo "Enter business code"
                 echo
-                read business_code
+                read BUSINESS_CODE
                 echo
-                awk -F, -v x="$business_code" '$1==x {print}' $tmpfile | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
+                awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
                 echo
             fi
             ;;
         3)
             # Update business data field
             check_file
-            result=$?
-            if test "$result" -eq 1; then
-                echo hello >&3
+            RESULT=$?
+            if test "$RESULT" -eq 1; then
+                echo "Enter business code"
+                echo
+                read BUSINESS_CODE
+                echo
+                echo "Old data"
+                echo
+                awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
+                echo
+                awk -v x="$BUSINESS_CODE" 'BEGIN {FS=OFS=","} $1==x {$2="Starbucks"} 1' $TMPFILE > tmp && mv tmp $TMPFILE
+                echo "New data"
+                echo
+                awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
+                echo
             fi
             ;;
         4)
             # Print entire file
             check_file
-            result=$?
-            if test "$result" -eq 1 ; then 
+            RESULT=$?
+            if test "$RESULT" -eq 1 ; then 
                 echo
-                cat $tmpfile | column -s "," -t | more -df
+                cat $TMPFILE | column -s"," -t | more -df
             fi
             ;;
         5)
             # Save changes 
             check_file
-            result=$?
-            if test "$result" -eq 1; then
-                head -n 1 <&4
+            RESULT=$?
+            if test "$RESULT" -eq 1; then
+                echo -n "Are you sure to want to save the changes? (y,n)"
+                read INPUT1
+                if [[ "$INPUT1" =~ [yY] ]]; then
+                    cp $TMPFILE $FILE
+                    echo "Changes saved in $FILE."
+                else
+                    echo "Changes not saved."
+                fi
             fi
             ;;
         6)
             exec 3>&-
-            rm "$tmpfile"
+            rm "$TMPFILE"
             echo
             echo "Thank you for using Business Hall!" 
+            ;;
+        "")
+            ;;
+        *)
+            echo "Invalid input."
             ;;
     esac
 }
@@ -99,27 +123,24 @@ perform_action () {
 echo
 echo
 echo
-printf "%*s\n" $(( (${#welcomeMessage} + columns) / 2)) "$welcomeMessage"
+printf "%*s\n" $(( (${#WELCOME_MESSAGE} + COLUMNS) / 2)) "$WELCOME_MESSAGE"
 echo 
 echo 
+echo -n "Press <ENTER> to continue..."
 
 # main app prompt
-input=0
-while [ "$input" != "6" ]; do
+INPUT=0
+while [ "$INPUT" != "6" ]; do
+
+    if [[ $INPUT = [1-5] ]]; then
+        echo -n "Press <ENTER> to continue..."
+    fi
+    read
 
     print_menu
-    read input
-
-    # handle edge case where input is empty string
-    if [ -z "$input" ]; then
-        input=0
-    fi
+    read INPUT
 
     echo
-    perform_action "$input"
+    perform_action "$INPUT"
 
 done
-
-
-
-
