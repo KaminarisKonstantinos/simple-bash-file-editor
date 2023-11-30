@@ -109,8 +109,6 @@ perform_action () {
             echo
             echo "Thank you for using Business Hall!" 
             ;;
-        "")
-            ;;
         *)
             echo "Invalid input."
             ;;
@@ -131,9 +129,7 @@ echo
 INPUT=0
 while [ "$INPUT" != "6" ]; do
 
-    if [[ $INPUT = [1-5] ]]; then
-        echo -n "Press <ENTER> to continue..."
-    fi
+    echo -n "Press <ENTER> to continue..."
     read
 
     print_menu

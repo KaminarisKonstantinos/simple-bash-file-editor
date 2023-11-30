@@ -109,8 +109,6 @@ perform_action () {
             echo
             echo "Thank you for using Business Hall!" 
             ;;
-        "")
-            ;;
         *)
             echo "Invalid input."
             ;;
@@ -126,15 +124,12 @@ echo
 printf "%*s\n" $(( (${#WELCOME_MESSAGE} + COLUMNS) / 2)) "$WELCOME_MESSAGE"
 echo 
 echo 
-echo -n "Press <ENTER> to continue..."
 
 # main app prompt
 INPUT=0
 while [ "$INPUT" != "6" ]; do
 
-    if [[ $INPUT = [1-5] ]]; then
-        echo -n "Press <ENTER> to continue..."
-    fi
+    echo -n "Press <ENTER> to continue..."
     read
 
     print_menu
