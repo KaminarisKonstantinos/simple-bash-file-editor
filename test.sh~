@@ -1,3 +1,7 @@
+#################################################################
+# 236064 Kaminaris Konstantinos
+#################################################################
+
 #!/usr/bin/env bash
 
 COLUMNS="$(tput cols)"
@@ -38,7 +42,7 @@ select_file () {
     else
         echo
         echo "File does not exist. Default file selected."
-        FILE="./Businesses.csv"
+        FILE="./businesses.csv"
     fi
     cp $FILE $TMPFILE
 }
@@ -47,31 +51,56 @@ print_business_data () {
     echo -n "Enter business code: "
     read BUSINESS_CODE
     echo
-    awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
+    awk_on_screen
     echo
+}
+
+awk_on_screen () {
+    awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
 }
 
 update_data () {
     echo -n "Enter business code: "
     read BUSINESS_CODE
+    # check if business code exists
     awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE > tmp
     if [[ -s tmp ]]; then
-        echo -n "Enter which field you would like to change: "
-        read FIELD_INDEX
-
-        echo "Old data:"
-        echo
-        awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
-        echo
-        awk -v x="$BUSINESS_CODE" 'BEGIN {FS=OFS=","} $1==x {$2="Starbucks"} 1' $TMPFILE > tmp && mv tmp $TMPFILE
-        echo "New data:"
-        echo
-        awk -F"," -v x="$BUSINESS_CODE" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
+        change_field
     else
         echo "Business code not found."
     fi
     rm -f tmp
     echo
+}
+
+change_field () {
+    echo -n "Enter which field you would like to change: "
+    read FIELD_INDEX
+    if [[ "$FIELD_INDEX" = [1-7] ]]; then
+        echo -n "Enter new field value: "
+        read FIELD_VALUE
+        echo
+        echo -n "Are you sure you want to change the value from $FIELD_VALUE? (y/n) "
+        read INPUT2
+        echo
+        if [[ "$INPUT2" =~ [yY] ]]; then
+            echo "Old data:"
+            echo
+            awk_on_screen
+            echo
+            # Make the change on tmpfile, not original file
+            awk -v x="$BUSINESS_CODE" -v y="$FIELD_INDEX" -v z="$FIELD_VALUE" 'BEGIN {FS=OFS=","} $1==x {$y=z} 1' $TMPFILE > tmp && mv tmp $TMPFILE
+            echo "New data:"
+            echo
+            awk_on_screen
+            echo
+            echo "Update successful!"
+        else
+            echo "Update canceled."
+        fi
+    else
+        echo "Invalid selection."
+    fi
 }
 
 print_entire_file () {
