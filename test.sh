@@ -83,16 +83,16 @@ change_field () {
     echo "Longitude (6)"
     echo "Latitude (7)"
     echo
-    echo -n "Select the field you would like to change by entering its respective number (1-7): "
-    read FIELD_INDEX
+    read -p "Select the field you would like to change by entering its respective number (1-7): " -n 1 FIELD_INDEX
+    echo
     if [[ "$FIELD_INDEX" = [1-7] ]]; then
         echo -n "Enter new field value: "
         read FIELD_VALUE
         echo
-        echo -n "Are you sure you want to change the value to $FIELD_VALUE? (y/n) "
-        read INPUT2
+        read -p "Are you sure you want to change the value to $FIELD_VALUE? (y/n): " -n 1
         echo
-        if [[ "$INPUT2" =~ [yY] ]]; then
+        echo
+        if [[ "$REPLY" =~ [yY] ]]; then
             echo "Old data:"
             echo
             awk_on_screen
@@ -118,9 +118,10 @@ print_entire_file () {
 }
 
 save_changes () {
-    echo -n "Are you sure to want to save the changes? (y/n) "
-    read INPUT1
-    if [[ "$INPUT1" =~ [yY] ]]; then
+    read -p "Are you sure to want to save the changes? (y/n): " -n 1
+    echo
+    echo
+    if [[ "$REPLY" =~ [yY] ]]; then
         cp $TMPFILE $FILE
         echo "Changes saved to $FILE!"
     else
@@ -129,10 +130,18 @@ save_changes () {
 }
 
 quit () {
-    exec 3>&-
-    rm "$TMPFILE"
     echo
-    echo "Thank you for using Business Hall!" 
+    read -p "Exit Business Hall? (y/n) :" -n 1
+    echo
+    if [[ "$REPLY" =~ [yY] ]]; then
+        exec 3>&-
+        rm "$TMPFILE"
+        echo
+        echo "Thank you for using Business Hall!" 
+    else
+        echo
+        INPUT=0
+    fi
 }
 
 perform_action () {
@@ -182,7 +191,7 @@ while [ "$INPUT" != "6" ]; do
     read
 
     print_menu
-    read INPUT
+    read -n 1 INPUT
 
     echo
     perform_action "$INPUT"
