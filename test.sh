@@ -2,6 +2,10 @@
 # 236064 1041756 Kaminaris Konstantinos
 #################################################################
 
+# Business Hall
+# business data file manipulation
+# basic file manipulation program that makes changes to a temporary file ($TMPFILE) before saving to the original ($FILE) 
+
 #!/usr/bin/env bash
 
 COLUMNS="$(tput cols)"
@@ -9,6 +13,7 @@ WELCOME_MESSAGE="Welcome to Business Hall!"
 TMPFILE=$(mktemp)
 FILE="./businesses.csv"
 
+# make file descriptors even though they are not used, to make sure that $TMPFILE gets destroyed if the program happens to crash
 exec 3>"$TMPFILE"
 exec 4<"$TMPFILE"
 
@@ -36,6 +41,7 @@ select_file () {
         echo "File does not exist. Default file selected."
         FILE="./businesses.csv"
     fi
+    # copy the original file to our temporary one
     cp $FILE $TMPFILE
 }
 
@@ -54,6 +60,7 @@ print_business_data () {
     echo
 }
 
+# print the business data in table format
 awk_on_screen () {
     awk -F"," -v x="$BUSINESS_ID" '$1==x {print}' $TMPFILE | column -s "," -t -N ID,BusinessName,Adress,City,PostCode,Longitude,Latitude
 }
@@ -74,17 +81,7 @@ update_data () {
 }
 
 change_field () {
-    echo
-    echo "ID (1)"
-    echo "Name (2)"
-    echo "Adress (3)"
-    echo "City (4)"
-    echo "PostCode (5)"
-    echo "Longitude (6)"
-    echo "Latitude (7)"
-    echo
-    read -p "Select the field you would like to change by entering its respective number (1-7): " -n 1 FIELD_INDEX
-    echo
+    ask_for_field_index
     if [[ "$FIELD_INDEX" = [1-7] ]]; then
         echo -n "Enter new field value: "
         read FIELD_VALUE
@@ -112,13 +109,27 @@ change_field () {
     fi
 }
 
+ask_for_field_index () {
+    echo
+    echo "ID (1)"
+    echo "Name (2)"
+    echo "Adress (3)"
+    echo "City (4)"
+    echo "PostCode (5)"
+    echo "Longitude (6)"
+    echo "Latitude (7)"
+    echo
+    read -p "Select the field you would like to change by entering its respective number (1-7): " -n 1 FIELD_INDEX
+    echo
+}
+
 print_entire_file () {
     echo
     cat $TMPFILE | column -s"," -t | more -df
 }
 
 save_changes () {
-    read -p "Are you sure to want to save the changes? (y/n): " -n 1
+    read -p "Are you sure to want to save the changes to $FILE? (y/n): " -n 1
     echo
     echo
     if [[ "$REPLY" =~ [yY] ]]; then
