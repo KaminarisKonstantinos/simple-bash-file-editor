@@ -29,3 +29,11 @@ The core idea of the application is that the file the user wants to read/change 
 <p align="center">
 <img align="center" alt="figure6" width="80%" src="./6.png?raw=true" />
 </p>
+
+## Documentation in Greek
+
+For detailed information in Greek, refer to the following documents:
+
+- **Original Assignment:** Find the original project assignment in Greek within Part 1 of the [`Project1-OS-2023-2024_final.pdf`](Project1-OS-2023-2024_final.pdf) file.
+
+- **Project Report:** Access my detailed report, written in Greek, in Part 1 of the [`OS-Report1.pdf`](OS-Report1.pdf) file.
