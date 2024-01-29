@@ -6,8 +6,26 @@ The core idea of the application is that the file the user wants to read/change 
 
 ## Examples of query execution:
 - Figure 1: Select Business File
+<p align="center">
+<img align="center" alt="figure1" width="80%" src="./1.png?raw=true" />
+</p>
 - Figure 2: View Business Details
+<p align="center">
+<img align="center" alt="figure2" width="80%" src="./2.png?raw=true" />
+</p>
 - Figure 3: Change Business Details
+<p align="center">
+<img align="center" alt="figure3" width="80%" src="./3.png?raw=true" />
+</p>
 - Figure 4: View File
+<p align="center">
+<img align="center" alt="figure4" width="80%" src="./4.png?raw=true" />
+</p>
 - Figure 5: Save File
+<p align="center">
+<img align="center" alt="figure5" width="80%" src="./5.png?raw=true" />
+</p>
 - Figure 6: Exit
+<p align="center">
+<img align="center" alt="figure6" width="80%" src="./6.png?raw=true" />
+</p>
