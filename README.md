@@ -1,4 +1,4 @@
-# Application Description
+# Simple Businesses File Editor Written in Bash and Awk
 
 The application is implemented in a BASH script, utilizing `awk` for file search. The program consists of a loop that presents options to the user, repeating until the user chooses to exit the application. Once the user selects an action, the program flow is directed through a "case ... in" statement to the corresponding function, where the specified action is performed.
 
